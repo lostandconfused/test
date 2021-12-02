@@ -126,12 +126,12 @@
         this.firstTick = true;
         this.instanceNumber = instances.length;
         instances.push(this);
-        this.$el.data("countdown-instance", this.instanceNumber);
+        this.$el.data("count-instance", this.instanceNumber);
         if (options) {
             if (typeof options === "function") {
-                this.$el.on("update.countdown", options);
-                this.$el.on("stoped.countdown", options);
-                this.$el.on("finish.countdown", options);
+                this.$el.on("update.countd", options);
+                this.$el.on("stoped.countd", options);
+                this.$el.on("finish.countd", options);
             } else {
                 this.options = $.extend({}, defaultOptions, options);
             }
@@ -173,7 +173,7 @@
         remove: function() {
             this.stop.call(this);
             instances[this.instanceNumber] = null;
-            delete this.$el.data().countdownInstance;
+            delete this.$el.data().countdInstance;
         },
         setFinalDate: function(value) {
             this.finalDate = parseDateString(value);
@@ -218,7 +218,7 @@
             }
         },
         dispatchEvent: function(eventName) {
-            var event = $.Event(eventName + ".countdown");
+            var event = $.Event(eventName + ".countd");
             event.finalDate = this.finalDate;
             event.elapsed = this.elapsed;
             event.offset = $.extend({}, this.offset);
@@ -229,7 +229,7 @@
     $.fn.countd = function() {
         var argumentsArray = Array.prototype.slice.call(arguments, 0);
         return this.each(function() {
-            var instanceNumber = $(this).data("countdown-instance");
+            var instanceNumber = $(this).data("countd-instance");
             if (instanceNumber !== undefined) {
                 var instance = instances[instanceNumber], method = argumentsArray[0];
                 if (Countd.prototype.hasOwnProperty(method)) {

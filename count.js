@@ -117,7 +117,7 @@
             return singular;
         }
     }
-    var Count = function(el, finalDate, options) {
+    var Countd = function(el, finalDate, options) {
         this.el = el;
         this.$el = $(el);
         this.interval = null;
@@ -141,7 +141,7 @@
             this.start();
         }
     };
-    $.extend(Count.prototype, {
+    $.extend(Countd.prototype, {
         start: function() {
             if (this.interval !== null) {
                 clearInterval(this.interval);
@@ -226,13 +226,13 @@
             this.$el.trigger(event);
         }
     });
-    $.fn.count = function() {
+    $.fn.countd = function() {
         var argumentsArray = Array.prototype.slice.call(arguments, 0);
         return this.each(function() {
             var instanceNumber = $(this).data("countdown-instance");
             if (instanceNumber !== undefined) {
                 var instance = instances[instanceNumber], method = argumentsArray[0];
-                if (Count.prototype.hasOwnProperty(method)) {
+                if (Countd.prototype.hasOwnProperty(method)) {
                     instance[method].apply(instance, argumentsArray.slice(1));
                 } else if (String(method).match(/^[$A-Z_][0-9A-Z_$]*$/i) === null) {
                     instance.setFinalDate.call(instance, method);
@@ -241,7 +241,7 @@
                     $.error("Method %s does not exist on jQuery.countdown".replace(/\%s/gi, method));
                 }
             } else {
-                new Count(this, argumentsArray[0], argumentsArray[1]);
+                new Countd(this, argumentsArray[0], argumentsArray[1]);
             }
         });
     };

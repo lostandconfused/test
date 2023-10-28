@@ -1,0 +1,411 @@
+// ==UserScript==
+// @name Chat hurt eyes
+// @namespace torn.com
+// @version 0.7
+// @author Ahab [1735214]
+// @include *torn.com*
+// @grant GM_addStyle
+// @license MIT
+// @require https://jpillora.com/xhook/dist/xhook.js
+// @require https://gist.githubusercontent.com/BrockA/2625891/raw/9c97aa67ff9c5d56be34a55ad6c18a314e5eb548/waitForKeyElements.js
+// @require https://raw.githubusercontent.com/seballot/spectrum/59bfa41e0dac01d5db8fa1dd63322e9f72561c5e/src/spectrum.js
+// @resource https://raw.githubusercontent.com/seballot/spectrum/master/src/spectrum.css
+// ==/UserScript==
+
+GM_addStyle(`
+[class*="chat-box-body__message-box"]{
+  padding: 1px 5px 1px 5px!important;
+}
+[class*="chat-box-body__message-box--group"]{
+  padding: 1px 10px 1px 0!important;
+}
+[class*="chat-box-body__message-box--self"]{
+  padding: 1px 5px 1px 5px!important;
+}
+[class*="chat-box-body__wrapper"]{
+  margin-bottom: 3px!important;
+}
+[class*="avatar__avatar-status-wrapper--online"]{
+  background-image: linear-gradient(#c0ff00,#c0ff00)!important;
+}
+[class*="avatar__avatar-status-wrapper--idle"]{
+  background-image: linear-gradient(#ff8000,#ff8000)!important;
+}
+[class*="chat-box-body__sender-button"]{
+  max-width: none!important;
+}
+[class*="chat-box-body__message-timestamp"]{
+  display: none!important
+}
+[class*="chat-box-body__avatar"]{
+  display: none!important
+}
+[id="tStamp"]{
+  color: #f6f6f6;;
+  margin-left: 5px;
+  font-size: 0.85em;
+}
+[class*="minimized-chat-box"]>[title^='Faction']{
+  background: none!important;
+  min-height: 34px;
+}
+#optionsLabel{
+  text-align: center;
+}
+.optionsRow{
+  display: flex;
+  align-items: center;
+}
+@media screen and (max-width: 600px){
+  [class*="minimized-chat-box__button"]{
+    min-width: 50px;
+  }
+  [id="tStamp"]{
+    color: #f6f6f6;;
+    margin-left: 5px;
+    font-size: 0.75em;
+}
+}
+.sp-container{position:absolute;top:0;left:0;display:inline-block;*display:inline;*zoom:1;z-index:9999994;overflow:hidden}.sp-container.sp-flat{position:relative}.sp-container,.sp-container *{-webkit-box-sizing:content-box;-moz-box-sizing:content-box;box-sizing:content-box}.sp-top{position:relative;width:100%;display:inline-block}.sp-top-inner{position:absolute;top:0;left:0;bottom:0;right:0}.sp-color{position:absolute;top:0;left:0;bottom:0;right:20%}.sp-hue{position:absolute;top:0;right:0;bottom:0;left:84%;height:100%}.sp-clear-enabled .sp-hue{top:33px;height:77.5%}.sp-fill{padding-top:80%}.sp-sat,.sp-val{position:absolute;top:0;left:0;right:0;bottom:0}.sp-alpha-enabled .sp-top{margin-bottom:18px}.sp-alpha-enabled .sp-alpha{display:block}.sp-alpha-handle{position:absolute;top:-4px;bottom:-4px;width:6px;left:50%;cursor:pointer;border:1px solid black;background:white;opacity:.8}.sp-alpha{display:none;position:absolute;bottom:-14px;right:0;left:0;height:8px}.sp-alpha-inner{border:solid 1px #333}.sp-clear{display:none}.sp-clear.sp-clear-display{background-position:center}.sp-clear-enabled .sp-clear{display:block;position:absolute;top:0;right:0;bottom:0;left:84%;height:28px}.sp-container,.sp-replacer,.sp-preview,.sp-dragger,.sp-slider,.sp-alpha,.sp-clear,.sp-alpha-handle,.sp-container.sp-dragging .sp-input,.sp-container button{-webkit-user-select:none;-moz-user-select:-moz-none;-o-user-select:none;user-select:none}.sp-container.sp-input-disabled .sp-input-container{display:none}.sp-container.sp-buttons-disabled .sp-button-container{display:none}.sp-container.sp-palette-buttons-disabled .sp-palette-button-container{display:none}.sp-palette-only .sp-picker-container{display:none}.sp-palette-disabled .sp-palette-container{display:none}.sp-initial-disabled .sp-initial{display:none}.sp-sat{background-image:-webkit-gradient(linear,0 0,100% 0,from(#FFF),to(rgba(204,154,129,0)));background-image:-webkit-linear-gradient(left,#FFF,rgba(204,154,129,0));background-image:-moz-linear-gradient(left,#fff,rgba(204,154,129,0));background-image:-o-linear-gradient(left,#fff,rgba(204,154,129,0));background-image:-ms-linear-gradient(left,#fff,rgba(204,154,129,0));background-image:linear-gradient(to right,#fff,rgba(204,154,129,0));-ms-filter:"progid:DXImageTransform.Microsoft.gradient(GradientType = 1, startColorstr=#FFFFFFFF, endColorstr=#00CC9A81)";filter:progid:DXImageTransform.Microsoft.gradient(GradientType = 1,startColorstr='#FFFFFFFF',endColorstr='#00CC9A81')}.sp-val{background-image:-webkit-gradient(linear,0 100%,0 0,from(#000),to(rgba(204,154,129,0)));background-image:-webkit-linear-gradient(bottom,#000,rgba(204,154,129,0));background-image:-moz-linear-gradient(bottom,#000,rgba(204,154,129,0));background-image:-o-linear-gradient(bottom,#000,rgba(204,154,129,0));background-image:-ms-linear-gradient(bottom,#000,rgba(204,154,129,0));background-image:linear-gradient(to top,#000,rgba(204,154,129,0));-ms-filter:"progid:DXImageTransform.Microsoft.gradient(startColorstr=#00CC9A81, endColorstr=#FF000000)";filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#00CC9A81',endColorstr='#FF000000')}.sp-hue{background:-moz-linear-gradient(top,#f00 0,#ff0 17%,#0f0 33%,#0ff 50%,#00f 67%,#f0f 83%,#f00 100%);background:-ms-linear-gradient(top,#f00 0,#ff0 17%,#0f0 33%,#0ff 50%,#00f 67%,#f0f 83%,#f00 100%);background:-o-linear-gradient(top,#f00 0,#ff0 17%,#0f0 33%,#0ff 50%,#00f 67%,#f0f 83%,#f00 100%);background:-webkit-gradient(linear,left top,left bottom,from(#f00),color-stop(0.17,#ff0),color-stop(0.33,#0f0),color-stop(0.5,#0ff),color-stop(0.67,#00f),color-stop(0.83,#f0f),to(#f00));background:-webkit-linear-gradient(top,#f00 0,#ff0 17%,#0f0 33%,#0ff 50%,#00f 67%,#f0f 83%,#f00 100%);background:linear-gradient(to bottom,#f00 0,#ff0 17%,#0f0 33%,#0ff 50%,#00f 67%,#f0f 83%,#f00 100%)}.sp-1{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0000',endColorstr='#ffff00')}.sp-2{height:16%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffff00',endColorstr='#00ff00')}.sp-3{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ff00',endColorstr='#00ffff')}.sp-4{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffff',endColorstr='#0000ff')}.sp-5{height:16%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#0000ff',endColorstr='#ff00ff')}.sp-6{height:17%;filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff00ff',endColorstr='#ff0000')}.sp-hidden{display:none !important}.sp-cf:before,.sp-cf:after{content:"";display:table}.sp-cf:after{clear:both}.sp-cf{*zoom:1}@media(max-device-width:480px){.sp-color{right:40%}.sp-hue{left:63%}.sp-fill{padding-top:60%}}.sp-dragger{border-radius:5px;height:5px;width:5px;border:1px solid #fff;background:#000;cursor:pointer;position:absolute;top:0;left:0}.sp-slider{position:absolute;top:0;cursor:pointer;height:3px;left:-1px;right:-1px;border:1px solid #000;background:white;opacity:.8}.sp-container{border-radius:0;background-color:#ececec;border:solid 1px #f0c49b;padding:0}.sp-container,.sp-container button,.sp-container input,.sp-color,.sp-hue,.sp-clear{font:normal 12px "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box;box-sizing:border-box}.sp-top{margin-bottom:3px}.sp-color,.sp-hue,.sp-clear{border:solid 1px #666}.sp-input-container{float:right;width:100px;margin-bottom:4px}.sp-initial-disabled .sp-input-container{width:100%}.sp-input{font-size:12px !important;border:1px inset;padding:4px 5px;margin:0;width:100%;background:transparent;border-radius:3px;color:#222}.sp-input:focus{border:1px solid orange}.sp-input.sp-validation-error{border:1px solid red;background:#fdd}.sp-picker-container,.sp-palette-container{float:left;position:relative;padding:10px;padding-bottom:300px;margin-bottom:-290px}.sp-picker-container{width:172px;border-left:solid 1px #fff}.sp-palette-container{border-right:solid 1px #ccc}.sp-palette-only .sp-palette-container{border:0}.sp-palette .sp-thumb-el{display:block;position:relative;float:left;width:24px;height:15px;margin:3px;cursor:pointer;border:solid 2px transparent}.sp-palette .sp-thumb-el:hover,.sp-palette .sp-thumb-el.sp-thumb-active{border-color:orange}.sp-thumb-el{position:relative}.sp-initial{float:left;border:solid 1px #333}.sp-initial span{width:30px;height:25px;border:0;display:block;float:left;margin:0}.sp-initial .sp-clear-display{background-position:center}.sp-palette-button-container,.sp-button-container{float:right}.sp-replacer{margin:0;overflow:hidden;cursor:pointer;padding:4px;display:inline-block;*zoom:1;*display:inline;border:solid 1px #91765d;background:#eee;color:#333;vertical-align:middle}.sp-replacer:hover,.sp-replacer.sp-active{border-color:#f0c49b;color:#111}.sp-replacer.sp-disabled{cursor:default;border-color:silver;color:silver}.sp-dd{padding:2px 0;height:16px;line-height:16px;float:left;font-size:10px}.sp-preview{position:relative;width:25px;height:20px;border:solid 1px #222;margin-right:5px;float:left;z-index:0}.sp-palette{*width:220px;max-width:220px}.sp-palette .sp-thumb-el{width:16px;height:16px;margin:2px 1px;border:solid 1px #d0d0d0}.sp-container{padding-bottom:0}.sp-container button{background-color:#eee;background-image:-webkit-linear-gradient(top,#eee,#ccc);background-image:-moz-linear-gradient(top,#eee,#ccc);background-image:-ms-linear-gradient(top,#eee,#ccc);background-image:-o-linear-gradient(top,#eee,#ccc);background-image:linear-gradient(to bottom,#eee,#ccc);border:1px solid #ccc;border-bottom:1px solid #bbb;border-radius:3px;color:#333;font-size:14px;line-height:1;padding:5px 4px;text-align:center;text-shadow:0 1px 0 #eee;vertical-align:middle}.sp-container button:hover{background-color:#ddd;background-image:-webkit-linear-gradient(top,#ddd,#bbb);background-image:-moz-linear-gradient(top,#ddd,#bbb);background-image:-ms-linear-gradient(top,#ddd,#bbb);background-image:-o-linear-gradient(top,#ddd,#bbb);background-image:linear-gradient(to bottom,#ddd,#bbb);border:1px solid #bbb;border-bottom:1px solid #999;cursor:pointer;text-shadow:0 1px 0 #ddd}.sp-container button:active{border:1px solid #aaa;border-bottom:1px solid #888;-webkit-box-shadow:inset 0 0 5px 2px #aaa,0 1px 0 0 #eee;-moz-box-shadow:inset 0 0 5px 2px #aaa,0 1px 0 0 #eee;-ms-box-shadow:inset 0 0 5px 2px #aaa,0 1px 0 0 #eee;-o-box-shadow:inset 0 0 5px 2px #aaa,0 1px 0 0 #eee;box-shadow:inset 0 0 5px 2px #aaa,0 1px 0 0 #eee}.sp-cancel{font-size:11px;color:#d93f3f !important;margin:0;padding:2px;margin-right:5px;vertical-align:middle;text-decoration:none}.sp-cancel:hover{color:#d93f3f !important;text-decoration:underline}.sp-palette span:hover,.sp-palette span.sp-thumb-active{border-color:#000}.sp-preview,.sp-alpha,.sp-thumb-el{position:relative;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==)}.sp-preview-inner,.sp-alpha-inner,.sp-thumb-inner{display:block;position:absolute;top:0;left:0;bottom:0;right:0}.sp-palette .sp-thumb-inner{background-position:50% 50%;background-repeat:no-repeat}.sp-palette .sp-thumb-light.sp-thumb-active .sp-thumb-inner{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIVJREFUeNpiYBhsgJFMffxAXABlN5JruT4Q3wfi/0DsT64h8UD8HmpIPCWG/KemIfOJCUB+Aoacx6EGBZyHBqI+WsDCwuQ9mhxeg2A210Ntfo8klk9sOMijaURm7yc1UP2RNCMbKE9ODK1HM6iegYLkfx8pligC9lCD7KmRof0ZhjQACDAAceovrtpVBRkAAAAASUVORK5CYII=)}.sp-palette .sp-thumb-dark.sp-thumb-active .sp-thumb-inner{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAMdJREFUOE+tkgsNwzAMRMugEAahEAahEAZhEAqlEAZhEAohEAYh81X2dIm8fKpEspLGvudPOsUYpxE2BIJCroJmEW9qJ+MKaBFhEMNabSy9oIcIPwrB+afvAUFoK4H0tMaQ3XtlrggDhOVVMuT4E5MMG0FBbCEYzjYT7OxLEvIHQLY2zWwQ3D+9luyOQTfKDiFD3iUIfPk8VqrKjgAiSfGFPecrg6HN6m/iBcwiDAo7WiBeawa+Kwh7tZoSCGLMqwlSAzVDhoK+6vH4G0P5wdkAAAAASUVORK5CYII=)}.sp-clear-display{background-repeat:no-repeat;background-position:center;background-image:url(data:image/gif;base64,R0lGODlhFAAUAPcAAAAAAJmZmZ2dnZ6enqKioqOjo6SkpKWlpaampqenp6ioqKmpqaqqqqurq/Hx8fLy8vT09PX19ff39/j4+Pn5+fr6+vv7+wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAAUABQAAAihAP9FoPCvoMGDBy08+EdhQAIJCCMybCDAAYUEARBAlFiQQoMABQhKUJBxY0SPICEYHBnggEmDKAuoPMjS5cGYMxHW3IiT478JJA8M/CjTZ0GgLRekNGpwAsYABHIypcAgQMsITDtWJYBR6NSqMico9cqR6tKfY7GeBCuVwlipDNmefAtTrkSzB1RaIAoXodsABiZAEFB06gIBWC1mLVgBa0AAOw==)}
+`)
+
+
+var chatId = {}
+var settings = {}
+var temp = {}
+var userid = 0
+var customColor = ""
+var style = ""
+
+if(localStorage.chatSettings === undefined){
+    localStorage.chatSettings = JSON.stringify({})
+    settings = {}
+}else{
+    settings = JSON.parse(localStorage.chatSettings);
+}
+
+$.each(settings, function(i, v){
+    $.each(settings[i], function(q, p){
+        if(q == 'bg'){
+            $('<style id="bg'+i+'">div[data-userid="'+i+'"] { background-color:'+settings[i][q]+"!important; }</style>").appendTo('head')
+        }else{
+            $('<style id="fc'+i+'">div[data-userid="'+i+'"] p, div[data-userid="'+i+'"] a { color:'+settings[i][q]+"!important; }</style>").appendTo('head')
+        }
+    })
+})
+if('fs' in settings){
+    $('<style id="fs">div[class*="chat-box-body__message-box"] p, div[class*="chat-box-body__message-box"] a { font-size:'+settings['fs']+"rem!important; }</style>").appendTo('head')
+}
+
+
+xhook.after(function(request, response) {
+  if(request.url.match(/private/)){
+      response.clone().text().then((text) => {
+          var data = JSON.parse(text)
+          if(data.hasOwnProperty('members')){
+              $.each(data['members'], function(i, v){
+                  if(data['members'][i]['user_id'] !== $('ul[class^="settings-menu"]').find('.link')[0].children[0].href.split("=")[1] && data['members'][i]['profile_url'].indexOf('profile') !== -1){
+                      chatId[data['members'][i]['nickname']] = data['members'][i]['user_id']
+                  }
+              })
+          }
+      })
+      load()
+  }
+  if(request.url.match(/show_read_receipt/)){
+      response.clone().text().then((text) => {
+          var data = JSON.parse(text)
+          if(data['name'] == 'private-chat' && data['last_message'] != null && 'created_at' in data['last_message']){
+              $.each(data['members'], function(i, v){
+                  if(data['members'][i]['user_id'] !== $('ul[class^="settings-menu"]').find('.link')[0].children[0].href.split("=")[1] && $('p[class*="chat-box-header__name"]').length !== 0){
+                      $.each($('p[class*="chat-box-header__name"]'), function(o, t){
+                          if($('p[class*="chat-box-header__name"]')[o].innerText == data['members'][i]['nickname'] && $($('p[class*="chat-box-header__name"]')[o].parentElement.parentElement).children('#tStamp').length < 1){
+                              $($('p[class*="chat-box-header__name"]')[o].parentElement).after('<p id="tStamp" class="tStamp">Last Message: '+new Date(data['last_message']['created_at']).toJSON().replace('T', ' ').slice(0, -5)+'</p>')
+                          }
+                          else if($('p[class*="chat-box-header__name"]')[o].innerText == data['members'][i]['nickname'] && $($('p[class*="chat-box-header__name"]')[o].parentElement.parentElement).children('#tStamp').length == 1){
+                              $($('p[class*="chat-box-header__name"]')[o].parentElement).children('#tStamp').replaceWith('<p id="tStamp" class="tStamp">Last Message: '+new Date(data['last_message']['created_at']).toJSON().replace('T', ' ').slice(0, -5)+'</p>')
+                          }
+                      })
+                  }
+              })
+          }else{
+              if($('p[class*="chat-box-header__name"]').length !== 0){
+                  $.each($('p[class*="chat-box-header__name"]'), function(o, t){
+                      if($('p[class*="chat-box-header__name"]')[o].innerText == data['name'] && $($('p[class*="chat-box-header__name"]')[o].parentElement.parentElement).children('#tStamp').length < 1){
+                          const time = new Date(data['last_message']['created_at']).toJSON().replace('T', ' ').slice(0, -5)
+                          $($('p[class*="chat-box-header__name"]')[o].parentElement).after('<p id="tStamp" class="tStamp">Last Message: '+time+'</p>')
+                      }
+                      else if($('p[class*="chat-box-header__name"]')[o].innerText == data['name'] && $($('p[class*="chat-box-header__name"]')[o].parentElement.parentElement).children('#tStamp').length == 1){
+                          const time = new Date(data['last_message']['created_at']).toJSON().replace('T', ' ').slice(0, -5)
+                          $($('p[class*="chat-box-header__name"]')[o].parentElement).children('#tStamp').replaceWith('<p id="tStamp" class="tStamp">Last Message: '+time+'</p>')
+                      }
+                  })
+              }
+          }
+      })
+  }
+});
+
+if($(window).width() < 600){
+    $($('button[title*="Faction"]')).detach().appendTo($('div[class*="group-minimized-chat-box___gdkW9"]')).wrap('<div class="minimized-chat-box___AoXrV"></div>')
+}
+
+function load(){
+    $.each($('img[alt^="chat-avatar"][class*="avatar--medium"]'), function(i, v){
+        var id = $('img[class*="avatar--medium"]')[i].src.split("-")[$('img[alt^="chat-avatar"][class*="avatar--medium"]')[i].src.split("-").length-1].split(".")[0]
+        if($('img[class*="avatar--medium"]')[i].src.indexOf('profile') !== -1){
+            id = chatId[$('img[class*="avatar--medium"]')[i].parentElement.parentElement.nextSibling.innerText]
+        }
+        $('img[alt^="chat-avatar"][class*="avatar--medium"]')[i].parentElement.href = "https://www.torn.com/profiles.php?XID="+id
+    })
+}
+
+var openchatTarget = $('div[class^="group-chat-box"]')[0];
+var openchatConfig = { attributes: false, childList: true, characterData: false, subtree: false };
+var openchat = new MutationObserver(function(mutations) {
+    if(mutations[0].addedNodes.length == 1){
+        addMini(mutations)
+    }
+})
+openchat.observe(openchatTarget, openchatConfig);
+
+var minChatTarget = $('div[class^="group-minimized-chat-box"]')[0];
+var minChatConfig = { attributes: false, childList: true, characterData: false, subtree: false };
+var minChat = new MutationObserver(function(mutations1) {
+    if(mutations1[0].addedNodes.length == 1 && mutations1[0].addedNodes[0].className.indexOf("unread-message-count") !== -1 || mutations1[0].addedNodes.length == 1){
+        addMini(mutations1)
+    }
+})
+minChat.observe(minChatTarget, minChatConfig);
+
+var addTarget = $('div[class*="group-chat-box___"]')[0];
+var addConfig = { attributes: false, childList: true, characterData: false, subtree: true };
+var add = new MutationObserver(function(mutations2) {
+    mutations2.forEach(function (i) {
+        if(i.addedNodes.length == 1 && i.addedNodes[0].classList.length == 0){
+            $(i.addedNodes[0]).find('[class^="chat-box-body__message-box"]').attr("data-userid", $(i.addedNodes[0]).find('[class*="hrefLink___"]')[0].href.split('=')[1])
+        }
+    })
+})
+add.observe(addTarget, addConfig);
+
+function options(){
+    var bgy = ""
+    var fcy = ""
+    var bgt = ""
+    var fct = ""
+    if($('script[uid]').attr("uid") in settings){
+        if('bg' in settings[$('script[uid]').attr("uid")]){
+            bgy = settings[$('script[uid]').attr("uid")]['bg']
+        }else{
+            bgy = "var(--chat-box-body-message-box-self)"
+        }
+        if('fc' in settings[$('script[uid]').attr("uid")]){
+            fcy = settings[$('script[uid]').attr("uid")]['fc']
+        }else{
+            fcy = "#f6f6f6"
+        }
+    }else{
+        bgy = "var(--chat-box-body-message-box-self)"
+        fcy = "#f6f6f6"
+    }
+    if($($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1] in settings){
+        if('bg' in settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]){
+            bgt = settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]['bg']
+        }else{
+            bgt = "var(--chat-box-body-message-box)"
+        }
+        if('fc' in settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]){
+            fct = settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]['fc']
+        }else{
+            fct = "var(--chat-box-body-message)"
+        }
+    }else{
+        bgt = "var(--chat-box-body-message-box)"
+        fct = "var(--chat-box-body-message)"
+    }
+    $('div[class^="chat-box-options___"]').children().append('<div id="chatOptions"><div id="optionsLabel">Your Options</div><div class="optionsRow"><input id="custom" data-color="'+bgy+'" class="bgpickerYou"/><p class="typography___Dc5WV body4 color-#333333">Background Color</p><input id="custom" data-color="'+fcy+'" class="fcpickerYou"/><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font Color</p></div><div id="optionsLabel">Their Options</div><div class="optionsRow"><input id="custom" data-color="'+bgt+'" class="bgpickerThem"/><p class="typography___Dc5WV body4 color-#333333">Background Color</p><input id="custom" data-color="'+fct+'" class="fcpickerThem"/><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font Color</p></div><div class="chat-box-options__items___Vwu4d"><input type="range" min="0.1" max="1.5" value='+settings['fs']+' step="0.1" class="slider" id="myRange"><p class="typography___Dc5WV body4 color-#333333">Font Size</p></div></div>')
+    $("#custom, #custom1").spectrum({
+        type: "color",
+        showPalette: false,
+        showInput: true,
+        showAlpha: true,
+        allowEmpty: true,
+        clickoutFiresChange: true,
+        closeOnClickout: true,
+        showInitial: true,
+        showButtons: false,
+        cancelText: "cancel",
+        chooseText: "choose",
+        preferredFormat: "rgb",
+        appendTo: $('div[id^="chatOptions"]')[0]
+    });
+
+    $(".bgpickerYou").on('move.spectrum', function(e, tinycolor){
+        if(e.target.value !== ""){
+            customColor = tinycolor.toRgbString()
+        }else{
+            customColor = "var(--chat-box-body-message-box-self)"
+        }
+        $('style[id*="bg'+$('script[uid]').attr("uid")+'"]').remove()
+        $('div[class*="chat-box-body__message-box--self___"]').css("background-color", customColor);
+    });
+    $(".bgpickerYou").on('change.spectrum', function(e, tinycolor){
+        if(e.target.value !== ""){
+            customColor = tinycolor.toRgbString()
+        }else{
+            customColor = "var(--chat-box-body-message-box-self)"
+        }
+        $('<style id="bg'+$('script[uid]').attr("uid")+'">div[class*="chat-box-body__message-box--self___"] { background:none!important; } div[class*="chat-box-body__message-box--self___"] { background-color:'+customColor+'!important; } </style>' ).appendTo( "head" )
+        userid = $('script[uid]').attr("uid")
+        temp = {}
+        temp[userid] = {"bg":customColor}
+        $.extend(true, settings, temp)
+        localStorage.chatSettings = JSON.stringify(settings);
+    });
+
+    $(".bgpickerThem").on('move.spectrum', function(e, tinycolor){
+        if(e.target.value !== ""){
+            customColor = tinycolor.toRgbString()
+        }else{
+            customColor = "var(--chat-box-body-message-box)"
+        }
+        if($(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]')).length != 0){
+            $('style[id*="bg'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"]').remove()
+            $('div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"]').css("background-color", customColor);
+        }else{
+            $('style[id*="bg'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]+'"]').remove()
+            $('div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]+'"]').css("background-color", customColor);
+        }
+    });
+    $(".bgpickerThem").on('change.spectrum', function(e, tinycolor){
+        if(e.target.value !== ""){
+            customColor = tinycolor.toRgbString()
+        }else{
+            customColor = "var(--chat-box-body-message-box)"
+        }
+        if($(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]')).length != 0){
+            $('<style id="bg'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'">div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"] { background-color:'+customColor+'!important; }</style>' ).appendTo( "head" )
+            userid = $(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")
+            temp = {}
+            temp[userid] = {"bg":customColor}
+            $.extend(true, settings, temp)
+        }else{
+            $('<style id="bg'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]+'">div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]+'"] { background-color:'+customColor+'!important; }</style>' ).appendTo( "head" )
+            userid = $(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]
+            temp = {}
+            temp[userid] = {"bg":customColor}
+            $.extend(true, settings, temp)
+        }
+        localStorage.chatSettings = JSON.stringify(settings);
+    });
+
+    $(".fcpickerYou").on('move.spectrum', function(e, tinycolor){
+        if(e.target.value !== ""){
+            customColor = tinycolor.toRgbString()
+        }else{
+            customColor = "#f6f6f6"
+        }
+        $('style[id*="fc'+$('script[uid]').attr("uid")+'"]').remove()
+        $('div[class*="chat-box-body__message-box--self___"]').find("p").css("color", customColor);
+        $('div[class*="chat-box-body__message-box--self___"]').find("a").css("color", customColor);
+    });
+    $(".fcpickerYou").on('change.spectrum', function(e, tinycolor){
+        if(e.target.value !== ""){
+            customColor = tinycolor.toRgbString()
+        }else{
+            customColor = "#f6f6f6"
+        }
+        $('<style id="fc'+$('script[uid]').attr("uid")+'">div[class*="chat-box-body__message-box--self___"] p { color:'+customColor+'!important; }</style>' ).appendTo( "head" )
+        $('<style id="fc'+$('script[uid]').attr("uid")+'">div[class*="chat-box-body__message-box--self___"] a { color:'+customColor+'!important; }</style>' ).appendTo( "head" )
+        userid = $('script[uid]').attr("uid")
+        temp = {}
+        temp[userid] = {"fc":customColor}
+        $.extend(true, settings, temp)
+        localStorage.chatSettings = JSON.stringify(settings);
+    });
+
+    $(".fcpickerThem").on('move.spectrum', function(e, tinycolor){
+        if(e.target.value !== ""){
+            customColor = tinycolor.toRgbString()
+        }else{
+            customColor = "var(--chat-box-body-message);"
+        }
+        if($(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]')).length != 0){
+            $('style[id*="fc'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"]').remove()
+            $('div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"]').find("p").css("color", customColor);
+            $('div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"]').find("a").css("color", customColor);
+        }else{
+            $('style[id*="fc'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]+'"]').remove()
+            $('div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]+'"]').find("p").css("color", customColor);
+            $('div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]+'"]').find("a").css("color", customColor);
+        }
+
+    });
+    $(".fcpickerThem").on('change.spectrum', function(e, tinycolor){
+        if(e.target.value !== ""){
+            customColor = tinycolor.toRgbString()
+        }else{
+            customColor = "var(--chat-box-body-message)"
+        }
+        if($(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]')).length != 0){
+            $('<style id="fc'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'">div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"] p { color:'+customColor+'!important; }</style>' ).appendTo( "head" )
+            $('<style id="fc'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'">div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"] a { color:'+customColor+'!important; }</style>' ).appendTo( "head" )
+            userid = $(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")
+            temp = {}
+            temp[userid] = {"fc":customColor}
+            $.extend(true, settings, temp)
+        }else{
+            $('<style id="fc'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]+'">div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]+'"] p { color:'+customColor+'!important; }</style>' ).appendTo( "head" )
+            $('<style id="fc'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]+'">div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]+'"] a { color:'+customColor+'!important; }</style>' ).appendTo( "head" )
+            userid = $(e.target.parentElement.offsetParent.offsetParent).find($('[class^="avatar__avatar-status-wrapper"]'))[0].href.split('=')[1]
+            temp = {}
+            temp[userid] = {"fc":customColor}
+            $.extend(true, settings, temp)
+        }
+        localStorage.chatSettings = JSON.stringify(settings);
+        });
+
+    $("#myRange").on('input', function(e){
+        $('style[id*="fs"]').remove()
+        $('div[class*="chat-box-body__message-box"] p').css("font-size", e.target.value+"rem");
+        $('div[class*="chat-box-body__message-box"] a').css("font-size", e.target.value+"rem");
+        $('<style id="fs">div[class*="chat-box-body__message-box"] p, div[class*="chat-box-body__message-box"] a { font-size:'+settings['fs']+"rem!important; }</style>").appendTo('head')
+        temp = {}
+        temp['fs'] = [e.target.value]
+        $.extend(true, settings, temp)
+        localStorage.chatSettings = JSON.stringify(settings);
+    });
+
+    $('button[class*="chat-box-options__button"]').on('click', function(e){
+        $('div[id*="chatOptions"]').hide()
+    });
+    $('button[class*="chat-box-options__confirmation-button___"]').on('click', function(e){
+        $('div[id*="chatOptions"]').show()
+    });
+
+    $('input[id*="custom"]').on('show.spectrum', function(e){
+        $('.sp-replacer').addClass('sp-disabled');
+        $('.sp-replacer').attr('disabled', 'disabled');
+    })
+    $('input[id*="custom"]').on('hide.spectrum', function(e){
+        $('.sp-replacer').removeClass('sp-disabled');
+        $('.sp-replacer').removeAttr('disabled');
+    })
+}
+
+waitForKeyElements('div[class^="chat-box-options___"]', options);
+
+function watchColorPicker(event) {
+  document.querySelectorAll("p").forEach((p) => {
+    p.style.color = event.target.value;
+  });
+}
+
+function addMini(mutations){
+    var id = $(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]')[0].src.split("-")[$(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]')[0].src.split("-").length-1].split(".")[0]
+    if($(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]')[0].src.indexOf('profile') !== -1){
+        id = chatId[$(mutations)[0].addedNodes[0].children[0].children[1].children[0].innerText]
+    }
+    $(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]')[0].parentElement.href = "https://www.torn.com/profiles.php?XID="+id
+}

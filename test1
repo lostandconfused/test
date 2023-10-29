@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Chat hurt eyes
 // @namespace torn.com
-// @version 0.9.1
+// @version 0.9.2
 // @author Ahab [1735214]
 // @include *torn.com*
 // @grant GM_addStyle
@@ -181,7 +181,6 @@ var Chat = new MutationObserver(function(mutations2) {
     if(mutations2[0].addedNodes.length == 1 && mutations2[0].addedNodes[0].className.indexOf("unread-message-count") !== -1 && $(mutations2[0].addedNodes)[0].find('[class*="chat-box-header__info-btn___"]').indexOf('btn') !== -1){
         addMini(mutations2)
     }
-
 })
 Chat.observe(ChatTarget, ChatConfig);
 

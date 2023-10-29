@@ -9,7 +9,6 @@
 // @require https://jpillora.com/xhook/dist/xhook.js
 // @require https://gist.githubusercontent.com/BrockA/2625891/raw/9c97aa67ff9c5d56be34a55ad6c18a314e5eb548/waitForKeyElements.js
 // @require https://raw.githubusercontent.com/seballot/spectrum/59bfa41e0dac01d5db8fa1dd63322e9f72561c5e/src/spectrum.js
-// @resource https://raw.githubusercontent.com/seballot/spectrum/master/src/spectrum.css
 // ==/UserScript==
 
 GM_addStyle(`

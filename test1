@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Chat hurt eyes
 // @namespace torn.com
-// @version 0.8
+// @version 0.7
 // @author Ahab [1735214]
 // @include *torn.com*
 // @grant GM_addStyle

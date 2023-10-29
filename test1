@@ -56,13 +56,14 @@ GM_addStyle(`
   justify-content: space-evenly;
 }
 .optionsRowB{
-   display: grid;
-   justify-items: center;
+  display: grid;
+  justify-items: center;
 }
 #chatOptions {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  padding-bottom: 5px;
 }
 .h7{
   font-size: 1rem;
@@ -236,7 +237,7 @@ function options(){
     if('fs' in settings){
         fs = settings['fs']
     }
-    $('div[class^="chat-box-options___"]').children().append('<div id="chatOptions"><div id="optionsLabel" class="h6">Options</div><div class="optionsRowB"><input type="range" min="0.1" max="1.5" value="'+fs+'" step="0.1" class="slider" id="myRange"><p class="typography___Dc5WV body4 color-#333333">Font Size</p></div><div id="optionsLabel" class="h7">You</div><div class="optionsRow"><div><input id="custom" data-color="'+bgy+'" class="bgpickerYou" style="display: none;"><p class="typography___Dc5WV body4 color-#333333">Background</p></div><div><input id="custom" data-color="'+fcy+'" class="fcpickerYou" style="display: none;"><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font</p></div></div><div id="optionsLabel" class="h7">Them</div><div class="optionsRow"><div><input id="custom" data-color="'+bgt+'" class="bgpickerThem" style="display: none;"><p class="typography___Dc5WV body4 color-#333333">Background</p></div><div><input id="custom" data-color="'+fct+'" class="fcpickerThem" style="display: none;"><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font</p></div></div></div>')
+    $('div[class^="chat-box-options___"]').children().append('<hr class="delimiter-999 m-top10 m-bottom10"><div id="chatOptions"><div id="optionsLabel" class="h6">Options</div><div class="optionsRowB"><input type="range" min="0.1" max="1.5" value="'+fs+'" step="0.1" class="slider" id="myRange"><p class="typography___Dc5WV body4 color-#333333">Font Size</p></div><div id="optionsLabel" class="h7">You</div><div class="optionsRow"><div><input id="custom" data-color="'+bgy+'" class="bgpickerYou" style="display: none;"><p class="typography___Dc5WV body4 color-#333333">Background</p></div><div><input id="custom" data-color="'+fcy+'" class="fcpickerYou" style="display: none;"><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font</p></div></div><div id="optionsLabel" class="h7">Them</div><div class="optionsRow"><div><input id="custom" data-color="'+bgt+'" class="bgpickerThem" style="display: none;"><p class="typography___Dc5WV body4 color-#333333">Background</p></div><div><input id="custom" data-color="'+fct+'" class="fcpickerThem" style="display: none;"><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font</p></div></div></div>')
     $("#custom, #custom1").spectrum({
         type: "color",
         showPalette: false,

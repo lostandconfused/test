@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Chat hurt eyes
 // @namespace torn.com
-// @version 0.7
+// @version 0.8
 // @author Ahab [1735214]
 // @include *torn.com*
 // @grant GM_addStyle
@@ -53,7 +53,20 @@ GM_addStyle(`
 }
 .optionsRow{
   display: flex;
-  align-items: center;
+  justify-content: space-evenly;
+}
+.optionsRowB{
+   display: grid;
+   justify-items: center;
+}
+#chatOptions {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+.h7{
+  font-size: 1rem;
+  padding-top: 5px;
 }
 @media screen and (max-width: 600px){
   [class*="minimized-chat-box__button"]{
@@ -218,7 +231,7 @@ function options(){
             fct = settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]['fc']
         }
     }
-    $('div[class^="chat-box-options___"]').children().append('<div id="chatOptions"><div id="optionsLabel">Your Options</div><div class="optionsRow"><input id="custom" data-color="'+bgy+'" class="bgpickerYou"/><p class="typography___Dc5WV body4 color-#333333">Background Color</p><input id="custom" data-color="'+fcy+'" class="fcpickerYou"/><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font Color</p></div><div id="optionsLabel">Their Options</div><div class="optionsRow"><input id="custom" data-color="'+bgt+'" class="bgpickerThem"/><p class="typography___Dc5WV body4 color-#333333">Background Color</p><input id="custom" data-color="'+fct+'" class="fcpickerThem"/><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font Color</p></div><div class="chat-box-options__items___Vwu4d"><input type="range" min="0.1" max="1.5" value='+settings['fs']+' step="0.1" class="slider" id="myRange"><p class="typography___Dc5WV body4 color-#333333">Font Size</p></div></div>')
+    $('div[class^="chat-box-options___"]').children().append('<div id="chatOptions"><div id="optionsLabel" class="h6">Options</div><div class="optionsRowB"><input type="range" min="0.1" max="1.5" value="0.8" step="0.1" class="slider" id="myRange"><p class="typography___Dc5WV body4 color-#333333">Font Size</p></div><div id="optionsLabel" class="h7">You</div><div class="optionsRow"><div><input id="custom" data-color="#424242" class="bgpickerYou" style="display: none;"><p class="typography___Dc5WV body4 color-#333333">Background</p></div><div><input id="custom" data-color="#f6f6f6" class="fcpickerYou" style="display: none;"><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font</p></div></div><div id="optionsLabel" class="h7">Them</div><div class="optionsRow"><div><input id="custom" data-color="#e3e3e3" class="bgpickerThem" style="display: none;"><p class="typography___Dc5WV body4 color-#333333">Background</p></div><div><input id="custom" data-color="#424242" class="fcpickerThem" style="display: none;"><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font</p></div></div></div>')
     $("#custom, #custom1").spectrum({
         type: "color",
         showPalette: false,

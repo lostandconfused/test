@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Chat hurt eyes
 // @namespace torn.com
-// @version 0.9
+// @version 0.9.1
 // @author Ahab [1735214]
 // @include *torn.com*
 // @grant GM_addStyle
@@ -174,17 +174,17 @@ function load(){
     })
 }
 
-var ChatTarget = $('div[class*="group-minimized-chat-box"]')[0];
+var ChatTarget = $('div[class^="group-chat-box"]')[0];
 var ChatConfig = { attributes: false, childList: true, characterData: false, subtree: false };
 var Chat = new MutationObserver(function(mutations2) {
-    if(mutations2[0].addedNodes.length == 1 && mutations2[0].addedNodes[0].className.indexOf("unread-message-count") !== -1 || mutations2[0].addedNodes.length == 1){
+    if(mutations2[0].addedNodes.length == 1 && mutations2[0].addedNodes[0].className.indexOf("unread-message-count") !== -1 && $(mutations2[0].addedNodes)[0].find('[class*="chat-box-header__info-btn___"]').indexOf('btn') !== -1){
         addMini(mutations2)
     }
 })
 Chat.observe(ChatTarget, ChatConfig);
 
 var minChatTarget = $('div[class^="group-minimized-chat-box"]')[0];
-var minChatConfig = { attributes: false, childList: true, characterData: false, subtree: false };
+var minChatConfig = { attributes: false, childList: true, characterData: false, subtree: true };
 var minChat = new MutationObserver(function(mutations1) {
     if(mutations1[0].addedNodes.length == 1 && mutations1[0].addedNodes[0].className.indexOf("unread-message-count") !== -1 || mutations1[0].addedNodes.length == 1){
         addMini(mutations1)
@@ -402,13 +402,11 @@ function removeId(uid, type){
 }
 function addMini(mutations){
     var id = ""
-    if(mutations[0].addedNodes[0].className.indexOf('options') !== -1){
-        if($(mutations[0].addedNodes[0].parentElement).find('img[alt^="chat-avatar"]').length > 0){
-            id = $(mutations[0].addedNodes[0].parentElement).find('img[alt^="chat-avatar"]')[0].src.split("-")[$(mutations[0].addedNodes[0].parentElement).find('img[alt^="chat-avatar"]')[0].src.split("-").length-1].split(".")[0]
-        }
-        else if($(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]')[0].src.indexOf('profile') !== -1){
-            id = chatId[$(mutations)[0].addedNodes[0].children[0].children[1].children[0].innerText]
-        }
-        $(mutations[0].addedNodes[0].parentElement).find('img[alt^="chat-avatar"]')[0].parentElement.href = "https://www.torn.com/profiles.php?XID="+id
+    if($(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]').length > 0){
+        id = $(mutations[0].addedNodes[0].parentElement).find('img[alt^="chat-avatar"]')[0].src.split("-")[$(mutations[0].addedNodes[0].parentElement).find('img[alt^="chat-avatar"]')[0].src.split("-").length-1].split(".")[0]
     }
+    else if($(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]')[0].src.indexOf('profile') !== -1){
+        id = chatId[$(mutations)[0].addedNodes[0].children[0].children[1].children[0].innerText]
+    }
+    $(mutations[0].addedNodes[0].parentElement).find('img[alt^="chat-avatar"]')[0].parentElement.href = "https://www.torn.com/profiles.php?XID="+id
 }

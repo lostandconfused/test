@@ -85,13 +85,15 @@ if(localStorage.chatSettings === undefined){
 }
 
 $.each(settings, function(i, v){
-    $.each(settings[i], function(q, p){
-        if(q == 'bg'){
-            $('<style id="bg'+i+'">div[data-userid="'+i+'"] { background-color:'+settings[i][q]+"!important; }</style>").appendTo('head')
-        }else{
-            $('<style id="fc'+i+'">div[data-userid="'+i+'"] p, div[data-userid="'+i+'"] a { color:'+settings[i][q]+"!important; }</style>").appendTo('head')
-        }
-    })
+    if(i != 'fs'){
+        $.each(settings[i], function(q, p){
+            if(q == 'bg'){
+                $('<style id="bg'+i+'">div[data-userid="'+i+'"] { background-color:'+settings[i][q]+"!important; }</style>").appendTo('head')
+            }else{
+                $('<style id="fc'+i+'">div[data-userid="'+i+'"] p, div[data-userid="'+i+'"] a { color:'+settings[i][q]+"!important; }</style>").appendTo('head')
+            }
+        })
+    }
 })
 if('fs' in settings){
     $('<style id="fs">div[class*="chat-box-body__message-box"] p, div[class*="chat-box-body__message-box"] a { font-size:'+settings['fs']+"rem!important; }</style>").appendTo('head')
@@ -160,14 +162,14 @@ function load(){
     })
 }
 
-var openchatTarget = $('div[class^="group-chat-box"]')[0];
-var openchatConfig = { attributes: false, childList: true, characterData: false, subtree: false };
-var openchat = new MutationObserver(function(mutations) {
-    if(mutations[0].addedNodes.length == 1){
-        addMini(mutations)
+var ChatTarget = $('div[class*="group-minimized-chat-box"]')[0];
+var ChatConfig = { attributes: false, childList: true, characterData: false, subtree: false };
+var Chat = new MutationObserver(function(mutations2) {
+    if(mutations2[0].addedNodes.length == 1 && mutations2[0].addedNodes[0].className.indexOf("unread-message-count") !== -1 || mutations2[0].addedNodes.length == 1){
+        addMini(mutations2)
     }
 })
-openchat.observe(openchatTarget, openchatConfig);
+Chat.observe(ChatTarget, ChatConfig);
 
 var minChatTarget = $('div[class^="group-minimized-chat-box"]')[0];
 var minChatConfig = { attributes: false, childList: true, characterData: false, subtree: false };
@@ -180,49 +182,42 @@ minChat.observe(minChatTarget, minChatConfig);
 
 var addTarget = $('div[class*="group-chat-box___"]')[0];
 var addConfig = { attributes: false, childList: true, characterData: false, subtree: true };
-var add = new MutationObserver(function(mutations2) {
-    mutations2.forEach(function (i) {
+var add = new MutationObserver(function(mutations) {
+    mutations.forEach(function (i) {
         if(i.addedNodes.length == 1 && i.addedNodes[0].classList.length == 0){
             $(i.addedNodes[0]).find('[class^="chat-box-body__message-box"]').attr("data-userid", $(i.addedNodes[0]).find('[class*="hrefLink___"]')[0].href.split('=')[1])
+            if($(i.addedNodes[0]).find('[class*="hrefLink___"]')[0].href.split('=')[1] in settings){
+                $('div[data-userid="'+$(i.addedNodes[0]).find('[class*="hrefLink___"]')[0].href.split('=')[1]+'"]').css("background-color", settings[$(i.addedNodes[0]).find('[class*="hrefLink___"]')[0].href.split('=')[1]]['bg']);
+            }
+            if($(i.addedNodes[0]).find('[class*="hrefLink___"]')[0].href.split('=')[1] in settings){
+                $('div[data-userid="'+$(i.addedNodes[0]).find('[class*="hrefLink___"]')[0].href.split('=')[1]+'"]').find("p").css("color", settings[$(i.addedNodes[0]).find('[class*="hrefLink___"]')[0].href.split('=')[1]]['fc']);
+                $('div[data-userid="'+$(i.addedNodes[0]).find('[class*="hrefLink___"]')[0].href.split('=')[1]+'"]').find("a").css("color", settings[$(i.addedNodes[0]).find('[class*="hrefLink___"]')[0].href.split('=')[1]]['fc']);
+            }
         }
     })
 })
 add.observe(addTarget, addConfig);
 
 function options(){
-    var bgy = ""
-    var fcy = ""
-    var bgt = ""
-    var fct = ""
+    var bgy = getComputedStyle(document.documentElement).getPropertyValue('--chat-box-body-message-box-self')
+    var fcy = "#f6f6f6"
+    var bgt = getComputedStyle(document.documentElement).getPropertyValue('--chat-box-body-message-box')
+    var fct = getComputedStyle(document.documentElement).getPropertyValue('--chat-box-body-message')
     if($('script[uid]').attr("uid") in settings){
         if('bg' in settings[$('script[uid]').attr("uid")]){
             bgy = settings[$('script[uid]').attr("uid")]['bg']
-        }else{
-            bgy = "var(--chat-box-body-message-box-self)"
         }
         if('fc' in settings[$('script[uid]').attr("uid")]){
             fcy = settings[$('script[uid]').attr("uid")]['fc']
-        }else{
-            fcy = "#f6f6f6"
         }
-    }else{
-        bgy = "var(--chat-box-body-message-box-self)"
-        fcy = "#f6f6f6"
     }
     if($($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1] in settings){
         if('bg' in settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]){
             bgt = settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]['bg']
-        }else{
-            bgt = "var(--chat-box-body-message-box)"
         }
         if('fc' in settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]){
             fct = settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]['fc']
-        }else{
-            fct = "var(--chat-box-body-message)"
         }
-    }else{
-        bgt = "var(--chat-box-body-message-box)"
-        fct = "var(--chat-box-body-message)"
     }
     $('div[class^="chat-box-options___"]').children().append('<div id="chatOptions"><div id="optionsLabel">Your Options</div><div class="optionsRow"><input id="custom" data-color="'+bgy+'" class="bgpickerYou"/><p class="typography___Dc5WV body4 color-#333333">Background Color</p><input id="custom" data-color="'+fcy+'" class="fcpickerYou"/><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font Color</p></div><div id="optionsLabel">Their Options</div><div class="optionsRow"><input id="custom" data-color="'+bgt+'" class="bgpickerThem"/><p class="typography___Dc5WV body4 color-#333333">Background Color</p><input id="custom" data-color="'+fct+'" class="fcpickerThem"/><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font Color</p></div><div class="chat-box-options__items___Vwu4d"><input type="range" min="0.1" max="1.5" value='+settings['fs']+' step="0.1" class="slider" id="myRange"><p class="typography___Dc5WV body4 color-#333333">Font Size</p></div></div>')
     $("#custom, #custom1").spectrum({
@@ -245,7 +240,7 @@ function options(){
         if(e.target.value !== ""){
             customColor = tinycolor.toRgbString()
         }else{
-            customColor = "var(--chat-box-body-message-box-self)"
+            customColor = getComputedStyle(document.documentElement).getPropertyValue('--chat-box-body-message-box-self')
         }
         $('style[id*="bg'+$('script[uid]').attr("uid")+'"]').remove()
         $('div[class*="chat-box-body__message-box--self___"]').css("background-color", customColor);
@@ -254,7 +249,7 @@ function options(){
         if(e.target.value !== ""){
             customColor = tinycolor.toRgbString()
         }else{
-            customColor = "var(--chat-box-body-message-box-self)"
+            customColor = getComputedStyle(document.documentElement).getPropertyValue('--chat-box-body-message-box-self')
         }
         $('<style id="bg'+$('script[uid]').attr("uid")+'">div[class*="chat-box-body__message-box--self___"] { background:none!important; } div[class*="chat-box-body__message-box--self___"] { background-color:'+customColor+'!important; } </style>' ).appendTo( "head" )
         userid = $('script[uid]').attr("uid")
@@ -268,7 +263,7 @@ function options(){
         if(e.target.value !== ""){
             customColor = tinycolor.toRgbString()
         }else{
-            customColor = "var(--chat-box-body-message-box)"
+            customColor = getComputedStyle(document.documentElement).getPropertyValue('--chat-box-body-message-box')
         }
         if($(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]')).length != 0){
             $('style[id*="bg'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"]').remove()
@@ -282,7 +277,7 @@ function options(){
         if(e.target.value !== ""){
             customColor = tinycolor.toRgbString()
         }else{
-            customColor = "var(--chat-box-body-message-box)"
+            customColor = getComputedStyle(document.documentElement).getPropertyValue('--chat-box-body-message-box')
         }
         if($(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]')).length != 0){
             $('<style id="bg'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'">div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"] { background-color:'+customColor+'!important; }</style>' ).appendTo( "head" )
@@ -329,7 +324,7 @@ function options(){
         if(e.target.value !== ""){
             customColor = tinycolor.toRgbString()
         }else{
-            customColor = "var(--chat-box-body-message);"
+            customColor = getComputedStyle(document.documentElement).getPropertyValue('-chat-box-body-message')
         }
         if($(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]')).length != 0){
             $('style[id*="fc'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"]').remove()
@@ -346,7 +341,7 @@ function options(){
         if(e.target.value !== ""){
             customColor = tinycolor.toRgbString()
         }else{
-            customColor = "var(--chat-box-body-message)"
+            customColor = getComputedStyle(document.documentElement).getPropertyValue('--chat-box-body-message')
         }
         if($(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]')).length != 0){
             $('<style id="fc'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'">div[data-userid="'+$(e.target.parentElement.offsetParent.offsetParent).find($('[class^="chat-box-body__message-box___"]:not([class*="chat-box-body__message-box--self"]'))[0].getAttribute("data-userid")+'"] p { color:'+customColor+'!important; }</style>' ).appendTo( "head" )
@@ -370,7 +365,7 @@ function options(){
         $('style[id*="fs"]').remove()
         $('div[class*="chat-box-body__message-box"] p').css("font-size", e.target.value+"rem");
         $('div[class*="chat-box-body__message-box"] a').css("font-size", e.target.value+"rem");
-        $('<style id="fs">div[class*="chat-box-body__message-box"] p, div[class*="chat-box-body__message-box"] a { font-size:'+settings['fs']+"rem!important; }</style>").appendTo('head')
+        $('<style id="fs">div[class*="chat-box-body__message-box"] p, div[class*="chat-box-body__message-box"] a { font-size:'+e.target.value+"rem!important; }</style>").appendTo('head')
         temp = {}
         temp['fs'] = [e.target.value]
         $.extend(true, settings, temp)
@@ -396,16 +391,15 @@ function options(){
 
 waitForKeyElements('div[class^="chat-box-options___"]', options);
 
-function watchColorPicker(event) {
-  document.querySelectorAll("p").forEach((p) => {
-    p.style.color = event.target.value;
-  });
-}
-
 function addMini(mutations){
-    var id = $(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]')[0].src.split("-")[$(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]')[0].src.split("-").length-1].split(".")[0]
-    if($(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]')[0].src.indexOf('profile') !== -1){
-        id = chatId[$(mutations)[0].addedNodes[0].children[0].children[1].children[0].innerText]
+    var id = ""
+    if(mutations[0].addedNodes[0].className.indexOf('options') !== -1){
+        if($(mutations[0].addedNodes[0].parentElement).find('img[alt^="chat-avatar"]').length > 0){
+            id = $(mutations[0].addedNodes[0].parentElement).find('img[alt^="chat-avatar"]')[0].src.split("-")[$(mutations[0].addedNodes[0].parentElement).find('img[alt^="chat-avatar"]')[0].src.split("-").length-1].split(".")[0]
+        }
+        else if($(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]')[0].src.indexOf('profile') !== -1){
+            id = chatId[$(mutations)[0].addedNodes[0].children[0].children[1].children[0].innerText]
+        }
+        $(mutations[0].addedNodes[0].parentElement).find('img[alt^="chat-avatar"]')[0].parentElement.href = "https://www.torn.com/profiles.php?XID="+id
     }
-    $(mutations[0].addedNodes[0]).find('img[alt^="chat-avatar"]')[0].parentElement.href = "https://www.torn.com/profiles.php?XID="+id
 }

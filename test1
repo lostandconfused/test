@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Chat hurt eyes
 // @namespace torn.com
-// @version 0.8
+// @version 0.9
 // @author Ahab [1735214]
 // @include *torn.com*
 // @grant GM_addStyle
@@ -215,6 +215,7 @@ function options(){
     var fcy = "#f6f6f6"
     var bgt = getComputedStyle(document.documentElement).getPropertyValue('--chat-box-body-message-box')
     var fct = getComputedStyle(document.documentElement).getPropertyValue('--chat-box-body-message')
+    var fs = '0.75'
     if($('script[uid]').attr("uid") in settings){
         if('bg' in settings[$('script[uid]').attr("uid")]){
             bgy = settings[$('script[uid]').attr("uid")]['bg']
@@ -226,12 +227,16 @@ function options(){
     if($($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1] in settings){
         if('bg' in settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]){
             bgt = settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]['bg']
+            console.log(bgt)
         }
         if('fc' in settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]){
             fct = settings[$($('div[class^="chat-box-options___"]')[0].parentElement).find('[class^="avatar__avatar-status-wrapper"]')[0].href.split("=")[1]]['fc']
         }
     }
-    $('div[class^="chat-box-options___"]').children().append('<div id="chatOptions"><div id="optionsLabel" class="h6">Options</div><div class="optionsRowB"><input type="range" min="0.1" max="1.5" value="0.8" step="0.1" class="slider" id="myRange"><p class="typography___Dc5WV body4 color-#333333">Font Size</p></div><div id="optionsLabel" class="h7">You</div><div class="optionsRow"><div><input id="custom" data-color="#424242" class="bgpickerYou" style="display: none;"><p class="typography___Dc5WV body4 color-#333333">Background</p></div><div><input id="custom" data-color="#f6f6f6" class="fcpickerYou" style="display: none;"><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font</p></div></div><div id="optionsLabel" class="h7">Them</div><div class="optionsRow"><div><input id="custom" data-color="#e3e3e3" class="bgpickerThem" style="display: none;"><p class="typography___Dc5WV body4 color-#333333">Background</p></div><div><input id="custom" data-color="#424242" class="fcpickerThem" style="display: none;"><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font</p></div></div></div>')
+    if('fs' in settings){
+        fs = settings['fs']
+    }
+    $('div[class^="chat-box-options___"]').children().append('<div id="chatOptions"><div id="optionsLabel" class="h6">Options</div><div class="optionsRowB"><input type="range" min="0.1" max="1.5" value="'+fs+'" step="0.1" class="slider" id="myRange"><p class="typography___Dc5WV body4 color-#333333">Font Size</p></div><div id="optionsLabel" class="h7">You</div><div class="optionsRow"><div><input id="custom" data-color="'+bgy+'" class="bgpickerYou" style="display: none;"><p class="typography___Dc5WV body4 color-#333333">Background</p></div><div><input id="custom" data-color="'+fcy+'" class="fcpickerYou" style="display: none;"><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font</p></div></div><div id="optionsLabel" class="h7">Them</div><div class="optionsRow"><div><input id="custom" data-color="'+bgt+'" class="bgpickerThem" style="display: none;"><p class="typography___Dc5WV body4 color-#333333">Background</p></div><div><input id="custom" data-color="'+fct+'" class="fcpickerThem" style="display: none;"><p class="typography___Dc5WV body4 color-#333333 chat-box-options__label___QSXin">Font</p></div></div></div>')
     $("#custom, #custom1").spectrum({
         type: "color",
         showPalette: false,

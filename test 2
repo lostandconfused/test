@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Chat hurt eyes
 // @namespace torn.com
-// @version 0.9.5
+// @version 0.9.6
 // @author Ahab [1735214]
 // @include *torn.com*
 // @grant GM_addStyle
@@ -84,6 +84,7 @@ GM_addStyle(`
 
 
 var settings = {}
+var chatId = {}
 var temp = {}
 var userid = 0
 var customColor = ""
